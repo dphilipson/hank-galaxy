@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "inlineSources": true,
+        "jsx": "react",
+        "lib": ["dom", "es6", "dom.iterable"],
+        "module": "commonjs",
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "es5"
+    },
+    "include": ["src/**/*"]
+}
