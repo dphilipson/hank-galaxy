@@ -24,14 +24,12 @@
         "packDist": "NODE_ENV=production yarn run pack",
         "packDll": "yarn run pack --config webpack.config.dll.js",
         "precommit": "lint-staged",
-        "prepare": "yarn run build",
         "start": "npm-run-all clean packDll devServer",
         "test": "npm-run-all lint typecheck",
         "typecheck": "tsc"
     },
     "lint-staged": {
-        "**/*.{ts,tsx}": ["yarn run lint --fix", "git add"],
-        "**/*.{js,json,ts,tsx}": ["format", "git add"]
+        "**/*.{ts,tsx}": ["yarn run lint --fix", "format", "git add"]
     },
     "devDependencies": {
         "@types/three": "^0.84.34",

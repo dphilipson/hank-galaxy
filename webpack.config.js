@@ -72,7 +72,7 @@ module.exports = {
     output: {
         filename: "[name].js",
         path: path.join(__dirname, "docs"),
-        publicPath: isProduction ? undefined : DEV_FULL_PATH,
+        publicPath: isProduction ? undefined : DEV_FULL_PATH + "/",
     },
     resolve: {
         extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
