@@ -8,6 +8,7 @@ const fs = require("fs");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 const webpack = require("webpack");
+const WebpackMildCompile = require('webpack-mild-compile').Plugin;
 
 const DEV_SERVER_PORT = 8426;
 const DEV_SERVER_PATH = "hank-ball";
@@ -61,6 +62,7 @@ function getDevOnlyPlugins() {
         new AddAssetHtmlPlugin({
             filepath: require.resolve("./docs/dll/dependencies.dll.js"),
         }),
+        new WebpackMildCompile(),
     ];
 }
 
