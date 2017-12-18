@@ -6,6 +6,7 @@ import bgLeftUrl = require("../static/bg_left.png");
 import bgRightUrl = require("../static/bg_right.png");
 import bgTopUrl = require("../static/bg_top.png");
 import imageUrl = require("../static/hank.png");
+import { Animation, runAnimations } from "./animationEngine";
 import { FlatteningBall } from "./flatteningBall";
 import "./index.scss";
 
@@ -40,12 +41,19 @@ function main(): void {
     camera.position.y = ball.flatCameraPosition.y;
     camera.position.z = ball.flatCameraPosition.z;
 
-    const animate = () => {
-        requestAnimationFrame(animate);
-        ball.setFlatness((Math.sin(Date.now() / (100 * 2 * Math.PI)) + 1) / 2);
-        renderer.render(scene, camera);
-    };
-    animate();
+    const animations: Animation[] = [
+        {
+            startTime: 0,
+            duration: 0,
+            effect: () => ball.setFlatness(1),
+        },
+        {
+            startTime: 2000,
+            duration: 1000,
+            effect: t => ball.setFlatness(1 - t),
+        },
+    ];
+    runAnimations(animations, () => renderer.render(scene, camera));
 }
 
 function addSkybox(scene: THREE.Scene): void {
