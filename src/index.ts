@@ -1,4 +1,10 @@
 import THREE = require("three");
+import bgBackUrl = require("../static/bg_back.png");
+import bgBotUrl = require("../static/bg_bot.png");
+import bgFrontUrl = require("../static/bg_front.png");
+import bgLeftUrl = require("../static/bg_left.png");
+import bgRightUrl = require("../static/bg_right.png");
+import bgTopUrl = require("../static/bg_top.png");
 import imageUrl = require("../static/hank.png");
 import "./index.scss";
 
@@ -17,6 +23,15 @@ function main(): void {
 
     handleResizes(camera, renderer);
     addCanvas(renderer);
+
+    scene.background = new THREE.CubeTextureLoader().load([
+        bgLeftUrl,
+        bgRightUrl,
+        bgTopUrl,
+        bgBotUrl,
+        bgBackUrl,
+        bgFrontUrl,
+    ]);
 
     const geometry = new THREE.SphereGeometry(1, 32, 32);
     const aspectRatio = window.innerWidth / window.innerHeight;
@@ -46,8 +61,8 @@ function main(): void {
         requestAnimationFrame(animate);
         ball.morphTargetInfluences![0] = 1;
         //         ball.rotation.y += Math.PI / 400;
-        // ball.morphTargetInfluences![0] =
-        //     (Math.sin(Date.now() / (100 * 2 * Math.PI)) + 1) / 2;
+        ball.morphTargetInfluences![0] =
+            (Math.sin(Date.now() / (100 * 2 * Math.PI)) + 1) / 2;
 
         ball.rotation.y = 3 / 2 * Math.PI;
         renderer.render(scene, camera);
