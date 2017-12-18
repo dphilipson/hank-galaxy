@@ -8,10 +8,10 @@ const fs = require("fs");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 const webpack = require("webpack");
-const WebpackMildCompile = require('webpack-mild-compile').Plugin;
+const WebpackMildCompile = require("webpack-mild-compile").Plugin;
 
 const DEV_SERVER_PORT = 8426;
-const DEV_SERVER_PATH = "hank-ball";
+const DEV_SERVER_PATH = "hank-galaxy";
 const DEV_FULL_PATH = `http://localhost:${DEV_SERVER_PORT}/${DEV_SERVER_PATH}`;
 const STATIC_FILE_REGEX = /\.(woff|svg|ttf|eot|gif|jpeg|jpg|png)([\?]?.*)$/;
 
@@ -55,12 +55,12 @@ function getDevOnlyPlugins() {
     return [
         new webpack.DllReferencePlugin({
             context: __dirname,
-            manifest: require("./docs/dll/dependencies-manifest.json"),
+            manifest: require("./dist/dll/dependencies-manifest.json"),
         }),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NamedModulesPlugin(),
         new AddAssetHtmlPlugin({
-            filepath: require.resolve("./docs/dll/dependencies.dll.js"),
+            filepath: require.resolve("./dist/dll/dependencies.dll.js"),
         }),
         new WebpackMildCompile(),
     ];
@@ -73,7 +73,7 @@ module.exports = {
     },
     output: {
         filename: "[name].js",
-        path: path.join(__dirname, "docs"),
+        path: path.join(__dirname, "dist"),
         publicPath: isProduction ? undefined : DEV_FULL_PATH + "/",
     },
     resolve: {
@@ -99,14 +99,14 @@ module.exports = {
             minify: {
                 collapseWhitespace: isProduction,
             },
-            title: "Hank Ball",
+            title: "Hank Galaxy",
         }),
         ...(isProduction ? getProdOnlyPlugins() : getDevOnlyPlugins()),
     ],
     devServer: isProduction
         ? undefined
         : {
-              contentBase: path.join(__dirname, "docs"),
+              contentBase: path.join(__dirname, "dist"),
               hot: true,
               port: DEV_SERVER_PORT,
               publicPath: DEV_FULL_PATH,

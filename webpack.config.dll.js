@@ -10,7 +10,7 @@ module.exports = {
     output: {
         filename: "[name].dll.js",
         library: "[name]",
-        path: path.join(__dirname, "docs", "dll"),
+        path: path.join(__dirname, "dist", "dll"),
         publicPath: "assets/",
     },
     devtool: "source-map",
@@ -18,7 +18,7 @@ module.exports = {
         new webpack.DllPlugin({
             context: __dirname,
             name: "[name]",
-            path: path.join(__dirname, "docs", "dll", "[name]-manifest.json"),
+            path: path.join(__dirname, "dist", "dll", "[name]-manifest.json"),
         }),
     ],
 };

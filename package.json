@@ -1,22 +1,22 @@
 {
-    "name": "hank-ball",
+    "name": "hank-galaxy",
     "version": "0.0.1",
-    "description": "Web page displaying Hank on a ball.",
+    "description": "Web page for flying through space with Hank.",
     "private": true,
     "repository": {
         "type": "git",
-        "url": "git://github.com/dphilipson/hank-ball.git"
+        "url": "git://github.com/dphilipson/hank-galaxy.git"
     },
-    "homepage": "https://github.com/dphilipson/hank-ball",
+    "homepage": "https://github.com/dphilipson/hank-galaxy",
     "bugs": {
-        "url": "https://github.com/dphilipson/hank-ball/issues",
+        "url": "https://github.com/dphilipson/hank-galaxy/issues",
         "email": "david.philipson@gmail.com"
     },
     "author": "David Philipson <david.philipson@gmail.com> (http://dphil.me)",
     "license": "MIT",
     "scripts": {
         "build": "npm-run-all clean packDist",
-        "clean": "rm -rf docs/*",
+        "clean": "rm -rf dist/*",
         "devServer": "webpack-dev-server",
         "format": "prettier --write",
         "lint": "tslint --project .",
@@ -29,11 +29,7 @@
         "typecheck": "tsc"
     },
     "lint-staged": {
-        "**/*.{ts,tsx}": [
-            "yarn run lint --fix",
-            "format",
-            "git add"
-        ]
+        "**/*.{ts,tsx}": ["yarn run lint --fix", "format", "git add"]
     },
     "devDependencies": {
         "@types/three": "^0.84.34",
