@@ -29,28 +29,53 @@ function main(): void {
     addSkybox(scene);
 
     const texture = new THREE.TextureLoader().load(imageUrl);
-    const ball = FlatteningBall.create({
+    const startBall = FlatteningBall.create({
         texture,
         radius: 1,
         center: new THREE.Vector3(0, 0, 0),
         aspectRatio,
         fieldOfView: FIELD_OF_VIEW,
     });
-    scene.add(ball.mesh);
-    camera.position.x = ball.flatCameraPosition.x;
-    camera.position.y = ball.flatCameraPosition.y;
-    camera.position.z = ball.flatCameraPosition.z;
+    startBall.setFlatness(1);
+    scene.add(startBall.mesh);
+    camera.position.x = startBall.flatCameraPosition.x;
+    camera.position.y = startBall.flatCameraPosition.y;
+    camera.position.z = startBall.flatCameraPosition.z;
+
+    const endBall = FlatteningBall.create({
+        texture,
+        radius: 1,
+        center: new THREE.Vector3(6, 0, 0),
+        aspectRatio,
+        fieldOfView: FIELD_OF_VIEW,
+    });
+    endBall.setFlatness(0);
+    scene.add(endBall.mesh);
 
     const animations: Animation[] = [
         {
-            startTime: 0,
-            duration: 0,
-            effect: () => ball.setFlatness(1),
+            startTime: 2000,
+            duration: 1000,
+            effect: t => startBall.setFlatness(1 - t),
         },
         {
             startTime: 2000,
+            duration: 4000,
+            effect: t => {
+                camera.position.x = 6 * t;
+                camera.position.z =
+                    startBall.flatCameraPosition.z + 4 * 2 * t * (1 - t);
+            },
+        },
+        {
+            startTime: 3000,
+            duration: 3000,
+            effect: t => (camera.rotation.y = -4 * Math.PI / 8 * t * (1 - t)),
+        },
+        {
+            startTime: 5000,
             duration: 1000,
-            effect: t => ball.setFlatness(1 - t),
+            effect: t => endBall.setFlatness(t),
         },
     ];
     runAnimations(animations, () => renderer.render(scene, camera));
