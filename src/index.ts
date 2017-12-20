@@ -6,11 +6,32 @@ import bgLeftUrl = require("../static/bg_left.png");
 import bgRightUrl = require("../static/bg_right.png");
 import bgTopUrl = require("../static/bg_top.png");
 import imageUrl = require("../static/hank.png");
+import planetUrl = require("../static/venus.jpg");
 import { Animation, runAnimations } from "./animationEngine";
+import * as Animations from "./animations";
 import { FlatteningBall } from "./flatteningBall";
 import "./index.scss";
+import { toRect } from "./latLon";
 
-const FIELD_OF_VIEW = 75;
+const FIELD_OF_VIEW = 60;
+const BIG_PLANET_RADIUS = 48;
+const START_LOCATION = toRect({
+    lat: -Math.PI / 6,
+    lon: Math.PI / 6,
+    r: BIG_PLANET_RADIUS + 10,
+});
+const END_LOCATION = toRect({
+    lat: Math.PI / 3,
+    lon: -2 * Math.PI / 3,
+    r: BIG_PLANET_RADIUS + 10,
+});
+/*
+const END_LOCATION = toRect({
+    lat: -Math.PI / 6,
+    lon: Math.PI / 6,
+    r: BIG_PLANET_RADIUS + 10,
+});
+*/
 
 function main(): void {
     const scene = new THREE.Scene();
@@ -28,11 +49,21 @@ function main(): void {
     addCanvas(renderer);
     addSkybox(scene);
 
+    const planetTexture = new THREE.TextureLoader().load(planetUrl);
+    const planetGeometry = new THREE.SphereBufferGeometry(
+        BIG_PLANET_RADIUS,
+        32,
+        32,
+    );
+    const planetMaterial = new THREE.MeshBasicMaterial({ map: planetTexture });
+    const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+    scene.add(planet);
+
     const texture = new THREE.TextureLoader().load(imageUrl);
     const startBall = FlatteningBall.create({
         texture,
         radius: 1,
-        center: new THREE.Vector3(0, 0, 0),
+        center: START_LOCATION,
         aspectRatio,
         fieldOfView: FIELD_OF_VIEW,
     });
@@ -45,7 +76,7 @@ function main(): void {
     const endBall = FlatteningBall.create({
         texture,
         radius: 1,
-        center: new THREE.Vector3(6, 0, 0),
+        center: END_LOCATION,
         aspectRatio,
         fieldOfView: FIELD_OF_VIEW,
     });
@@ -53,30 +84,55 @@ function main(): void {
     scene.add(endBall.mesh);
 
     const animations: Animation[] = [
+        { startTime: 0, endTime: 200, effect: () => startBall.setFlatness(0) },
         {
-            startTime: 2000,
-            endTime: 3000,
-            effect: t => startBall.setFlatness(1 - t),
+            // Really good arc!
+            startTime: 1000,
+            endTime: 7000,
+            effect: Animations.travelGreatCircleTo(
+                camera,
+                endBall.flatCameraPosition,
+            ),
         },
-        {
-            startTime: 2000,
-            endTime: 6000,
-            effect: t => {
-                camera.position.x = 6 * t;
-                camera.position.z =
-                    startBall.flatCameraPosition.z + 4 * 2 * t * (1 - t);
-            },
-        },
-        {
-            startTime: 3000,
-            endTime: 6000,
-            effect: t => (camera.rotation.y = -4 * Math.PI / 8 * t * (1 - t)),
-        },
-        {
-            startTime: 5000,
-            endTime: 6000,
-            effect: t => endBall.setFlatness(t),
-        },
+        // {
+        //     startTime: 0,
+        //     endTime: 200,
+        //     effect: () =>
+        //         camera.position.addVectors(
+        //             startBall.flatCameraPosition,
+        //             new THREE.Vector3(0, 0, 10),
+        //         ),
+        // },
+
+        // {
+        //     startTime: 0,
+        //     endTime: 5000,
+        //     effect: t => (camera.rotation.y = t * 2 * Math.PI),
+        // },
+        // {
+        //     startTime: 2000,
+        //     endTime: 3000,
+        //     effect: t => startBall.setFlatness(1 - t),
+        // },
+        // {
+        //     startTime: 2000,
+        //     endTime: 6000,
+        //     effect: t => {
+        //         camera.position.x = startBall.flatCameraPosition.x + 6 * t;
+        //         camera.position.z =
+        //             startBall.flatCameraPosition.z + 4 * 2 * t * (1 - t);
+        //     },
+        // },
+        // {
+        //     startTime: 3000,
+        //     endTime: 6000,
+        //     effect: t => (camera.rotation.y = -4 * Math.PI / 8 * t * (1 - t)),
+        // },
+        // {
+        //     startTime: 5000,
+        //     endTime: 6000,
+        //     effect: t => endBall.setFlatness(t),
+        // },
     ];
     runAnimations(animations, () => renderer.render(scene, camera));
 }
