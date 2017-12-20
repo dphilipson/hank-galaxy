@@ -69,7 +69,7 @@ function getDevOnlyPlugins() {
 module.exports = {
     devtool: !isProduction && "inline-source-map",
     entry: {
-        hankBall: ["./src/index.ts"],
+        index: ["./src/index.ts"],
     },
     output: {
         filename: "[name].js",

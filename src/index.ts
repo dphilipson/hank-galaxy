@@ -55,12 +55,12 @@ function main(): void {
     const animations: Animation[] = [
         {
             startTime: 2000,
-            duration: 1000,
+            endTime: 3000,
             effect: t => startBall.setFlatness(1 - t),
         },
         {
             startTime: 2000,
-            duration: 4000,
+            endTime: 6000,
             effect: t => {
                 camera.position.x = 6 * t;
                 camera.position.z =
@@ -69,12 +69,12 @@ function main(): void {
         },
         {
             startTime: 3000,
-            duration: 3000,
+            endTime: 6000,
             effect: t => (camera.rotation.y = -4 * Math.PI / 8 * t * (1 - t)),
         },
         {
             startTime: 5000,
-            duration: 1000,
+            endTime: 6000,
             effect: t => endBall.setFlatness(t),
         },
     ];
