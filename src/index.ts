@@ -80,7 +80,7 @@ function main(): void {
     const initialState: RenderState = {
         startBallPosition: START_LOCATION,
         startBallFlatPosition: startBall.flatCameraPosition,
-        startBallFlatness: 0,
+        startBallFlatness: 1,
         endBallPosition: END_LOCATION,
         endBallFlatPosition: endBall.flatCameraPosition,
         endBallFlatness: 0,
@@ -104,52 +104,27 @@ function main(): void {
 
     const animations: Array<Animation<RenderState>> = [
         {
-            // Really good arc!
-            startTime: 1000,
-            endTime: 7000,
-            updateState: Animations.travelGreatCircleTo(
-                endBall.flatCameraPosition,
+            startTime: 1500,
+            endTime: 2500,
+            updateState: Animations.setStartBallFlatness(0),
+        },
+        {
+            startTime: 2000,
+            endTime: 8000,
+            updateState: Animations.eased(
+                Animations.travelGreatCircleTo(endBall.flatCameraPosition),
             ),
         },
-        // {
-        //     startTime: 0,
-        //     endTime: 200,
-        //     effect: () =>
-        //         camera.position.addVectors(
-        //             startBall.flatCameraPosition,
-        //             new THREE.Vector3(0, 0, 10),
-        //         ),
-        // },
-
-        // {
-        //     startTime: 0,
-        //     endTime: 5000,
-        //     effect: t => (camera.rotation.y = t * 2 * Math.PI),
-        // },
-        // {
-        //     startTime: 2000,
-        //     endTime: 3000,
-        //     effect: t => startBall.setFlatness(1 - t),
-        // },
-        // {
-        //     startTime: 2000,
-        //     endTime: 6000,
-        //     effect: t => {
-        //         camera.position.x = startBall.flatCameraPosition.x + 6 * t;
-        //         camera.position.z =
-        //             startBall.flatCameraPosition.z + 4 * 2 * t * (1 - t);
-        //     },
-        // },
-        // {
-        //     startTime: 3000,
-        //     endTime: 6000,
-        //     effect: t => (camera.rotation.y = -4 * Math.PI / 8 * t * (1 - t)),
-        // },
-        // {
-        //     startTime: 5000,
-        //     endTime: 6000,
-        //     effect: t => endBall.setFlatness(t),
-        // },
+        {
+            startTime: 2000,
+            endTime: 8000,
+            updateState: Animations.moveLookAtTarget(END_LOCATION),
+        },
+        {
+            startTime: 7000,
+            endTime: 8000,
+            updateState: Animations.setEndBallFlatness(1),
+        },
     ];
     runAnimations(animations, initialState, copyRenderState, render);
 }
@@ -169,7 +144,6 @@ function handleResizes(
     camera: THREE.PerspectiveCamera,
     renderer: THREE.Renderer,
 ): void {
-    // Throttle resizes, as suggested by MDN.
     window.addEventListener("resize", () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
