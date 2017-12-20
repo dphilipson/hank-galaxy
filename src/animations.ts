@@ -10,7 +10,7 @@ export function travelGreatCircleTo(
         const initial = initialState.cameraPosition;
         const initialR = initial.length();
         const straightLinePosition = initial.clone().lerp(target, t);
-        const r = (1 - t) * initialR + t * targetR;
+        const r = (1 - t) * initialR + t * targetR + 4 * 10 * t * (1 - t);
         const position = straightLinePosition.setLength(r);
         state.cameraPosition.copy(position);
         return state;

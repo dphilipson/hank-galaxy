@@ -23,7 +23,7 @@ const START_LOCATION = toRect({
 });
 const END_LOCATION = toRect({
     lat: Math.PI / 3,
-    lon: -2 * Math.PI / 3,
+    lon: -3 * Math.PI / 3,
     r: BIG_PLANET_RADIUS + 10,
 });
 
@@ -110,19 +110,19 @@ function main(): void {
         },
         {
             startTime: 2000,
-            endTime: 8000,
+            endTime: 10000,
             updateState: Animations.eased(
                 Animations.travelGreatCircleTo(endBall.flatCameraPosition),
             ),
         },
         {
             startTime: 2000,
-            endTime: 8000,
+            endTime: 10000,
             updateState: Animations.moveLookAtTarget(END_LOCATION),
         },
         {
-            startTime: 7000,
-            endTime: 8000,
+            startTime: 9000,
+            endTime: 10000,
             updateState: Animations.setEndBallFlatness(1),
         },
     ];
