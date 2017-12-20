@@ -11,6 +11,7 @@ import { Animation, runAnimations } from "./animationEngine";
 import * as Animations from "./animations";
 import { FlatteningBall } from "./flatteningBall";
 import "./index.scss";
+import { copyRenderState, RenderState } from "./interfaces";
 import { toRect } from "./latLon";
 
 const FIELD_OF_VIEW = 60;
@@ -25,13 +26,6 @@ const END_LOCATION = toRect({
     lon: -2 * Math.PI / 3,
     r: BIG_PLANET_RADIUS + 10,
 });
-/*
-const END_LOCATION = toRect({
-    lat: -Math.PI / 6,
-    lon: Math.PI / 6,
-    r: BIG_PLANET_RADIUS + 10,
-});
-*/
 
 function main(): void {
     const scene = new THREE.Scene();
@@ -83,14 +77,37 @@ function main(): void {
     endBall.setFlatness(0);
     scene.add(endBall.mesh);
 
-    const animations: Animation[] = [
-        { startTime: 0, endTime: 200, effect: () => startBall.setFlatness(0) },
+    const initialState: RenderState = {
+        startBallPosition: START_LOCATION,
+        startBallFlatPosition: startBall.flatCameraPosition,
+        startBallFlatness: 0,
+        endBallPosition: END_LOCATION,
+        endBallFlatPosition: endBall.flatCameraPosition,
+        endBallFlatness: 0,
+        cameraPosition: startBall.flatCameraPosition,
+        cameraLookAt: START_LOCATION,
+    };
+
+    const render = (state: RenderState) => {
+        const {
+            startBallFlatness,
+            endBallFlatness,
+            cameraPosition,
+            cameraLookAt,
+        } = state;
+        startBall.setFlatness(startBallFlatness);
+        endBall.setFlatness(endBallFlatness);
+        camera.position.copy(cameraPosition);
+        camera.lookAt(cameraLookAt);
+        renderer.render(scene, camera);
+    };
+
+    const animations: Array<Animation<RenderState>> = [
         {
             // Really good arc!
             startTime: 1000,
             endTime: 7000,
-            effect: Animations.travelGreatCircleTo(
-                camera,
+            updateState: Animations.travelGreatCircleTo(
                 endBall.flatCameraPosition,
             ),
         },
@@ -134,7 +151,7 @@ function main(): void {
         //     effect: t => endBall.setFlatness(t),
         // },
     ];
-    runAnimations(animations, () => renderer.render(scene, camera));
+    runAnimations(animations, initialState, copyRenderState, render);
 }
 
 function addSkybox(scene: THREE.Scene): void {
