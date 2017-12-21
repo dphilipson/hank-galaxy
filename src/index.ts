@@ -5,7 +5,8 @@ import bgFrontUrl = require("../static/bg_front.png");
 import bgLeftUrl = require("../static/bg_left.png");
 import bgRightUrl = require("../static/bg_right.png");
 import bgTopUrl = require("../static/bg_top.png");
-import imageUrl = require("../static/hank.png");
+import hankUrl = require("../static/hank.png");
+import lunaUrl = require("../static/luna.png");
 import debrisRareUrl = require("../static/mars.jpg");
 import debrisCommonUrl = require("../static/moon.jpg");
 import smallPlanetUrl = require("../static/neptune.jpg");
@@ -69,9 +70,9 @@ function main(): void {
     );
     scene.add(pointLight);
 
-    const texture = new THREE.TextureLoader().load(imageUrl);
+    const startTexture = new THREE.TextureLoader().load(hankUrl);
     const startBall = FlatteningBall.create({
-        texture,
+        texture: startTexture,
         radius: 1,
         center: START_LOCATION,
         aspectRatio,
@@ -83,8 +84,9 @@ function main(): void {
     camera.position.y = startBall.flatCameraPosition.y;
     camera.position.z = startBall.flatCameraPosition.z;
 
+    const endTexture = new THREE.TextureLoader().load(lunaUrl);
     const endBall = FlatteningBall.create({
-        texture,
+        texture: endTexture,
         radius: 1,
         center: END_LOCATION,
         aspectRatio,
