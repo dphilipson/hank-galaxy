@@ -25,9 +25,10 @@ export class FlatteningBall {
             flatHeight,
         );
         geometry.morphTargets.push({ name: "flat", vertices: flatVertices });
-        const material = new THREE.MeshBasicMaterial({
+        const material = new THREE.MeshLambertMaterial({
             map: texture,
             morphTargets: true,
+            morphNormals: true,
         });
         const mesh = new THREE.Mesh(geometry, material);
         mesh.position.x = center.x;

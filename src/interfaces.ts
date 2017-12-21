@@ -9,6 +9,7 @@ export interface RenderState {
     endBallFlatness: number;
     cameraPosition: THREE.Vector3;
     cameraLookAt: THREE.Vector3;
+    lighting: number;
 }
 
 export function copyRenderState(state: RenderState): RenderState {

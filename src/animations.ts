@@ -63,6 +63,14 @@ export function setEndBallFlatness(target: number): StateUpdater<RenderState> {
     };
 }
 
+export function setLighting(target: number): StateUpdater<RenderState> {
+    return (state, t, initialState) => {
+        const lighting = (1 - t) * initialState.lighting + t * target;
+        state.lighting = lighting;
+        return state;
+    };
+}
+
 export function eased<S>(updater: StateUpdater<S>): StateUpdater<S> {
     return (state, t, initialState) => updater(state, ease(t), initialState);
 }

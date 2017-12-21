@@ -18,7 +18,7 @@ const FIELD_OF_VIEW = 60;
 const BIG_PLANET_RADIUS = 48;
 const START_LOCATION = toRect({
     lat: -Math.PI / 6,
-    lon: Math.PI / 6,
+    lon: Math.PI / 3,
     r: BIG_PLANET_RADIUS + 10,
 });
 const END_LOCATION = toRect({
@@ -26,6 +26,9 @@ const END_LOCATION = toRect({
     lon: -3 * Math.PI / 3,
     r: BIG_PLANET_RADIUS + 10,
 });
+const AMBIENT_LIGHTING_INTENSITY = 0.7;
+const POINT_LIGHT_COLOR = "#A66321";
+const POINT_LIGHT_INTENSITY = 6;
 
 function main(): void {
     const scene = new THREE.Scene();
@@ -49,9 +52,20 @@ function main(): void {
         32,
         32,
     );
-    const planetMaterial = new THREE.MeshBasicMaterial({ map: planetTexture });
+    const planetMaterial = new THREE.MeshBasicMaterial({
+        map: planetTexture,
+    });
     const planet = new THREE.Mesh(planetGeometry, planetMaterial);
     scene.add(planet);
+
+    const ambientLight = new THREE.AmbientLight();
+    scene.add(ambientLight);
+
+    const pointLight = new THREE.PointLight(
+        POINT_LIGHT_COLOR,
+        POINT_LIGHT_INTENSITY,
+    );
+    scene.add(pointLight);
 
     const texture = new THREE.TextureLoader().load(imageUrl);
     const startBall = FlatteningBall.create({
@@ -86,6 +100,7 @@ function main(): void {
         endBallFlatness: 0,
         cameraPosition: startBall.flatCameraPosition,
         cameraLookAt: START_LOCATION,
+        lighting: 0,
     };
 
     const render = (state: RenderState) => {
@@ -94,11 +109,15 @@ function main(): void {
             endBallFlatness,
             cameraPosition,
             cameraLookAt,
+            lighting,
         } = state;
         startBall.setFlatness(startBallFlatness);
         endBall.setFlatness(endBallFlatness);
         camera.position.copy(cameraPosition);
         camera.lookAt(cameraLookAt);
+        ambientLight.intensity =
+            (1 - lighting) * 1 + lighting * AMBIENT_LIGHTING_INTENSITY;
+        pointLight.intensity = lighting * POINT_LIGHT_INTENSITY;
         renderer.render(scene, camera);
     };
 
@@ -107,6 +126,11 @@ function main(): void {
             startTime: 1500,
             endTime: 2500,
             updateState: Animations.setStartBallFlatness(0),
+        },
+        {
+            startTime: 1500,
+            endTime: 2500,
+            updateState: Animations.setLighting(1),
         },
         {
             startTime: 2000,
@@ -119,6 +143,11 @@ function main(): void {
             startTime: 2000,
             endTime: 10000,
             updateState: Animations.moveLookAtTarget(END_LOCATION),
+        },
+        {
+            startTime: 9000,
+            endTime: 10000,
+            updateState: Animations.setLighting(0),
         },
         {
             startTime: 9000,
