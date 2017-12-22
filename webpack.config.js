@@ -55,12 +55,12 @@ function getDevOnlyPlugins() {
     return [
         new webpack.DllReferencePlugin({
             context: __dirname,
-            manifest: require("./dist/dll/dependencies-manifest.json"),
+            manifest: require("./docs/dll/dependencies-manifest.json"),
         }),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NamedModulesPlugin(),
         new AddAssetHtmlPlugin({
-            filepath: require.resolve("./dist/dll/dependencies.dll.js"),
+            filepath: require.resolve("./docs/dll/dependencies.dll.js"),
         }),
         new WebpackMildCompile(),
     ];
@@ -73,7 +73,7 @@ module.exports = {
     },
     output: {
         filename: "[name].js",
-        path: path.join(__dirname, "dist"),
+        path: path.join(__dirname, "docs"),
         publicPath: isProduction ? undefined : DEV_FULL_PATH + "/",
     },
     resolve: {
@@ -106,7 +106,7 @@ module.exports = {
     devServer: isProduction
         ? undefined
         : {
-              contentBase: path.join(__dirname, "dist"),
+              contentBase: path.join(__dirname, "docs"),
               hot: true,
               port: DEV_SERVER_PORT,
               publicPath: DEV_FULL_PATH,

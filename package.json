@@ -16,7 +16,7 @@
     "license": "MIT",
     "scripts": {
         "build": "npm-run-all clean packDist",
-        "clean": "rm -rf dist/*",
+        "clean": "rm -rf docs/*",
         "devServer": "webpack-dev-server",
         "format": "prettier --write",
         "lint": "tslint --project .",
@@ -29,11 +29,7 @@
         "typecheck": "tsc"
     },
     "lint-staged": {
-        "**/*.{ts,tsx}": [
-            "yarn run lint --fix",
-            "format",
-            "git add"
-        ]
+        "**/*.{ts,tsx}": ["yarn run lint --fix", "format", "git add"]
     },
     "devDependencies": {
         "@types/seedrandom": "^2.4.27",
