@@ -1,3 +1,4 @@
+import seedrandom = require("seedrandom");
 import THREE = require("three");
 import bgBackUrl = require("../static/bg_back.png");
 import bgBotUrl = require("../static/bg_bot.png");
@@ -211,15 +212,20 @@ function addSmallPlanet(scene: THREE.Scene): void {
 }
 
 function addDebris(scene: THREE.Scene): void {
+    const random = seedrandom("seed");
     const textureCommon = new THREE.TextureLoader().load(debrisCommonUrl);
     const textureRare = new THREE.TextureLoader().load(debrisRareUrl);
     for (let i = 0; i < DEBRIS_COUNT; i++) {
-        const texture = Math.random() < 0.1 ? textureRare : textureCommon;
-        const lat = randomInRange(-Math.PI / 2, Math.PI / 2);
-        const lon = randomInRange(0, 2 * Math.PI);
-        const r = randomInRange(BIG_PLANET_RADIUS + 12, BIG_PLANET_RADIUS + 30);
+        const texture = random() < 0.1 ? textureRare : textureCommon;
+        const lat = randomInRange(random, -Math.PI / 2, Math.PI / 2);
+        const lon = randomInRange(random, 0, 2 * Math.PI);
+        const r = randomInRange(
+            random,
+            BIG_PLANET_RADIUS + 12,
+            BIG_PLANET_RADIUS + 30,
+        );
         const position = toRect({ lat, lon, r });
-        const radius = randomInRange(0.25, 2);
+        const radius = randomInRange(random, 0.25, 2);
         const geometry = new THREE.SphereBufferGeometry(radius, 16, 16);
         const material = new THREE.MeshLambertMaterial({ map: texture });
         const planet = new THREE.Mesh(geometry, material);
@@ -245,8 +251,8 @@ function addCanvas(renderer: THREE.Renderer): void {
     document.body.appendChild(canvas);
 }
 
-function randomInRange(min: number, max: number): number {
-    return min + (max - min) * Math.random();
+function randomInRange(random: () => number, min: number, max: number): number {
+    return min + (max - min) * random();
 }
 
 main();

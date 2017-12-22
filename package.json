@@ -29,9 +29,14 @@
         "typecheck": "tsc"
     },
     "lint-staged": {
-        "**/*.{ts,tsx}": ["yarn run lint --fix", "format", "git add"]
+        "**/*.{ts,tsx}": [
+            "yarn run lint --fix",
+            "format",
+            "git add"
+        ]
     },
     "devDependencies": {
+        "@types/seedrandom": "^2.4.27",
         "@types/three": "^0.84.34",
         "add-asset-html-webpack-plugin": "^2.1.2",
         "autoprefixer": "^7.1.6",
@@ -56,6 +61,7 @@
         "webpack-mild-compile": "^2.0.0"
     },
     "dependencies": {
+        "seedrandom": "^2.4.3",
         "three": "^0.88.0"
     }
 }
