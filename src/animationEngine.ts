@@ -15,7 +15,7 @@ export function runAnimations<S>(
     initialState: S,
     copyState: (state: S) => S,
     render: (s: S) => void,
-): Promise<void> {
+): Promise<S> {
     const maxEndTime = animations
         .map(a => a.endTime)
         .reduce((a, b) => Math.max(a, b));
@@ -47,7 +47,7 @@ export function runAnimations<S>(
             if (elapsedTime < maxEndTime) {
                 requestAnimationFrame(animate);
             } else {
-                resolve();
+                resolve(state);
             }
         })(),
     );

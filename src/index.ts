@@ -15,8 +15,8 @@ import { Animation, runAnimations } from "./animationEngine";
 import * as Animations from "./animations";
 import { FlatteningBall } from "./flatteningBall";
 import "./index.scss";
-import { copyRenderState, RenderState } from "./interfaces";
 import { toRect } from "./latLon";
+import { copyRenderState, RenderState } from "./renderState";
 
 const FIELD_OF_VIEW = 60;
 const BIG_PLANET_RADIUS = 48;
@@ -41,6 +41,9 @@ const DEBRIS_COUNT = 16;
 const AMBIENT_LIGHTING_INTENSITY = 0.7;
 const POINT_LIGHT_COLOR = "#A66321";
 const POINT_LIGHT_INTENSITY = 6;
+const ATMOSPHERE_COLOR = "#D9822B";
+const ATMOSPHERE_THICKNESS = 0.5;
+const ATMOSPHERE_OPACITY = 0.25;
 
 function main(): void {
     const scene = new THREE.Scene();
@@ -58,6 +61,7 @@ function main(): void {
     addCanvas(renderer);
     addSkybox(scene);
     addBigPlanet(scene);
+    addBigPlanetAtmosphere(scene);
     addSmallPlanet(scene);
     addDebris(scene);
 
@@ -80,9 +84,6 @@ function main(): void {
     });
     startBall.setFlatness(1);
     scene.add(startBall.mesh);
-    camera.position.x = startBall.flatCameraPosition.x;
-    camera.position.y = startBall.flatCameraPosition.y;
-    camera.position.z = startBall.flatCameraPosition.z;
 
     const endTexture = new THREE.TextureLoader().load(lunaUrl);
     const endBall = FlatteningBall.create({
@@ -96,11 +97,7 @@ function main(): void {
     scene.add(endBall.mesh);
 
     const initialState: RenderState = {
-        startBallPosition: START_LOCATION,
-        startBallFlatPosition: startBall.flatCameraPosition,
         startBallFlatness: 1,
-        endBallPosition: END_LOCATION,
-        endBallFlatPosition: endBall.flatCameraPosition,
         endBallFlatness: 0,
         cameraPosition: startBall.flatCameraPosition,
         cameraLookAt: START_LOCATION,
@@ -178,6 +175,21 @@ function addBigPlanet(scene: THREE.Scene): void {
     const geometry = new THREE.SphereBufferGeometry(BIG_PLANET_RADIUS, 32, 32);
     const material = new THREE.MeshBasicMaterial({
         map: texture,
+    });
+    const planet = new THREE.Mesh(geometry, material);
+    scene.add(planet);
+}
+
+function addBigPlanetAtmosphere(scene: THREE.Scene): void {
+    const geometry = new THREE.SphereBufferGeometry(
+        BIG_PLANET_RADIUS + ATMOSPHERE_THICKNESS,
+        32,
+        32,
+    );
+    const material = new THREE.MeshBasicMaterial({
+        color: ATMOSPHERE_COLOR,
+        transparent: true,
+        opacity: ATMOSPHERE_OPACITY,
     });
     const planet = new THREE.Mesh(geometry, material);
     scene.add(planet);

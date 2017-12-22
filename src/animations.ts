@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { StateUpdater } from "./animationEngine";
-import { RenderState } from "./interfaces";
+import { RenderState } from "./renderState";
 
 export function travelGreatCircleTo(
     target: THREE.Vector3,
