@@ -1,8 +1,8 @@
 import * as THREE from "three";
 
 export interface RenderState {
-    startBallFlatness: number;
-    endBallFlatness: number;
+    hankBallFlatness: number;
+    lunaBallFlatness: number;
     cameraPosition: THREE.Vector3;
     cameraLookAt: THREE.Vector3;
     lighting: number;

@@ -45,20 +45,18 @@ export function moveLookAtTarget(
     };
 }
 
-export function setStartBallFlatness(
-    target: number,
-): StateUpdater<RenderState> {
+export function setHankBallFlatness(target: number): StateUpdater<RenderState> {
     return (state, t, initialState) => {
-        const flatness = (1 - t) * initialState.startBallFlatness + t * target;
-        state.startBallFlatness = flatness;
+        const flatness = (1 - t) * initialState.hankBallFlatness + t * target;
+        state.hankBallFlatness = flatness;
         return state;
     };
 }
 
-export function setEndBallFlatness(target: number): StateUpdater<RenderState> {
+export function setLunaBallFlatness(target: number): StateUpdater<RenderState> {
     return (state, t, initialState) => {
-        const flatness = (1 - t) * initialState.endBallFlatness + t * target;
-        state.endBallFlatness = flatness;
+        const flatness = (1 - t) * initialState.lunaBallFlatness + t * target;
+        state.lunaBallFlatness = flatness;
         return state;
     };
 }
