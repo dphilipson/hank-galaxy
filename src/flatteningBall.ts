@@ -1,4 +1,5 @@
 import {
+  BufferGeometry,
   Mesh,
   MeshLambertMaterial,
   SphereGeometry,
@@ -27,12 +28,13 @@ export class FlatteningBall {
     const geometry = new SphereGeometry(radius, 32, 32);
     const flatVertices = getFlatVertices(geometry.vertices);
     geometry.morphTargets.push({ name: "flat", vertices: flatVertices });
+    const bufferGeometry = new BufferGeometry().fromGeometry(geometry);
     const material = new MeshLambertMaterial({
       map: texture,
       morphTargets: true,
       morphNormals: true,
     });
-    const mesh = new Mesh(geometry, material);
+    const mesh = new Mesh(bufferGeometry, material);
     mesh.position.copy(center);
     mesh.rotation.y = (3 * Math.PI) / 2;
     const flatDistance =
