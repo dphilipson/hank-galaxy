@@ -1,6 +1,6 @@
 # Hank Galaxy
 
-Repo for the page [Hank Galaxy](https://dphilipson.github.io/hank-galaxy).
+Repo for the page [Hank Galaxy](https://hank-galaxy.firebaseapp.com).
 
 ## FAQ
 
