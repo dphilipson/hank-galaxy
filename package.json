@@ -6,7 +6,6 @@
     "type": "git",
     "url": "git://github.com/dphilipson/hank-galaxy.git"
   },
-  "homepage": "https://github.com/dphilipson/hank-galaxy",
   "bugs": {
     "url": "https://github.com/dphilipson/hank-galaxy/issues",
     "email": "david.philipson@gmail.com"
