@@ -3,10 +3,11 @@ import { StateUpdater } from "./animationEngine";
 import { RenderState } from "./renderState";
 
 export function travelGreatCircleTo(
-  target: Vector3,
+  getTarget: () => Vector3,
 ): StateUpdater<RenderState> {
-  const targetR = target.length();
   return (state, t, initialState) => {
+    const target = getTarget();
+    const targetR = target.length();
     const initial = initialState.cameraPosition;
     const initialR = initial.length();
     const straightLinePosition = initial.clone().lerp(target, t);

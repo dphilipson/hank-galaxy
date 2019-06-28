@@ -3,6 +3,7 @@ import "./index.scss";
 import * as serviceWorker from "./serviceWorker";
 
 async function main(): Promise<void> {
+  createLoadingIndicator();
   const flier = await loadFlier();
   function handleRestingPosition(isAtHank: boolean): void {
     const button = createVisitButton(
@@ -17,8 +18,17 @@ async function main(): Promise<void> {
   handleRestingPosition(true);
 }
 
+function createLoadingIndicator(): void {
+  const div = document.createElement("div");
+  div.classList.add("loading-indicator");
+  div.innerText = "Loading…";
+  setTimeout(() => div.classList.add("loading-indicator-loaded"), 1);
+  document.body.appendChild(div);
+}
+
 function createVisitButton(text: string, onClick: () => void): HTMLElement {
-  const button = document.createElement("div");
+  const button = document.createElement("button");
+  button.type = "button";
   button.classList.add("visit-button");
   setTimeout(() => button.classList.add("visit-button-loaded"), 1);
   button.innerText = text;

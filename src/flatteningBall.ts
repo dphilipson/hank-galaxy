@@ -7,7 +7,7 @@ import {
   Vector3,
 } from "three";
 
-export interface FlatteningBallCreateParams {
+export interface FlatteningBallConfig {
   texture: Texture;
   radius: number;
   center: Vector3;
@@ -19,12 +19,8 @@ const FLAT_WIDTH = 4;
 const FLAT_HEIGHT = 2;
 
 export class FlatteningBall {
-  public static create({
-    texture,
-    radius,
-    center,
-    fieldOfView,
-  }: FlatteningBallCreateParams): FlatteningBall {
+  public static create(config: FlatteningBallConfig): FlatteningBall {
+    const { texture, radius, center } = config;
     const geometry = new SphereGeometry(radius, 32, 32);
     const flatVertices = getFlatVertices(geometry.vertices);
     geometry.morphTargets.push({ name: "flat", vertices: flatVertices });
@@ -37,24 +33,30 @@ export class FlatteningBall {
     const mesh = new Mesh(bufferGeometry, material);
     mesh.position.copy(center);
     mesh.rotation.y = (3 * Math.PI) / 2;
-    const flatDistance =
-      FLAT_HEIGHT / (2 * Math.tan((fieldOfView * Math.PI) / 360));
-    // The -radius is because the flat version of the ball is distance r
-    // from the ball's center.
-    const flatCameraPosition = center
-      .clone()
-      .sub(new Vector3(0, 0, -flatDistance - radius));
-    return new FlatteningBall(mesh, flatCameraPosition);
+    return new FlatteningBall(mesh, config);
   }
 
   private constructor(
     public readonly mesh: Mesh,
-    public readonly flatCameraPosition: Vector3,
+    private readonly config: FlatteningBallConfig,
   ) {}
 
   public setFlatness(flatness: number): void {
     const clampedFlatness = Math.min(1, Math.max(0, flatness));
     this.mesh.morphTargetInfluences = [clampedFlatness];
+  }
+
+  public getFlatCameraPosition(aspectRatio: number): Vector3 {
+    const { radius, center, fieldOfView } = this.config;
+    const maxedDimension =
+      aspectRatio < FLAT_WIDTH / FLAT_HEIGHT
+        ? FLAT_HEIGHT
+        : FLAT_WIDTH / aspectRatio;
+    const flatDistance =
+      maxedDimension / (2 * Math.tan((fieldOfView * Math.PI) / 360));
+    // The -radius is because the flat version of the ball is distance r
+    // from the ball's center.
+    return center.clone().sub(new Vector3(0, 0, -flatDistance - radius));
   }
 }
 

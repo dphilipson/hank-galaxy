@@ -132,7 +132,7 @@ export async function loadFlier(): Promise<Flier> {
   let state: RenderState = {
     hankBallFlatness: 1,
     lunaBallFlatness: 0,
-    cameraPosition: hankBall.flatCameraPosition.clone(),
+    cameraPosition: hankBall.getFlatCameraPosition(getAspectRatio()).clone(),
     cameraLookAt: HANK_LOCATION.clone(),
     lighting: 0,
   };
@@ -141,7 +141,7 @@ export async function loadFlier(): Promise<Flier> {
     renderer.render(scene, camera);
   };
 
-  const syncStateAndRender = ({
+  const render = ({
     hankBallFlatness,
     lunaBallFlatness,
     cameraPosition,
@@ -177,10 +177,10 @@ export async function loadFlier(): Promise<Flier> {
         startTime: 500,
         endTime: 8500,
         updateState: Animations.eased(
-          Animations.travelGreatCircleTo(
+          Animations.travelGreatCircleTo(() =>
             destination === Destination.Luna
-              ? lunaBall.flatCameraPosition
-              : hankBall.flatCameraPosition,
+              ? lunaBall.getFlatCameraPosition(getAspectRatio())
+              : hankBall.getFlatCameraPosition(getAspectRatio()),
           ),
         ),
       },
@@ -205,22 +205,25 @@ export async function loadFlier(): Promise<Flier> {
             : Animations.setHankBallFlatness(1),
       },
     ];
-    state = await runAnimations(
-      animations,
-      state,
-      copyRenderState,
-      syncStateAndRender,
-    );
+    state = await runAnimations(animations, state, copyRenderState, render);
   };
 
   addCanvas(renderer);
-  syncStateAndRender(state);
+  render(state);
 
   window.addEventListener("resize", () => {
-    camera.aspect = getAspectRatio();
+    const aspectRatio = getAspectRatio();
+    camera.aspect = aspectRatio;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderOnly();
+    state = {
+      ...state,
+      cameraPosition: (state.hankBallFlatness === 1
+        ? hankBall
+        : lunaBall
+      ).getFlatCameraPosition(aspectRatio),
+    };
+    render(state);
   });
 
   return {
