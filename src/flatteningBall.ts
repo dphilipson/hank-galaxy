@@ -4,26 +4,22 @@ export interface FlatteningBallCreateParams {
   texture: THREE.Texture;
   radius: number;
   center: THREE.Vector3;
-  aspectRatio: number;
   fieldOfView: number;
 }
+
+// The width and height of the flattened form, for a ball of radius 1.
+const FLAT_WIDTH = 4;
+const FLAT_HEIGHT = 2;
 
 export class FlatteningBall {
   public static create({
     texture,
     radius,
     center,
-    aspectRatio,
     fieldOfView,
   }: FlatteningBallCreateParams): FlatteningBall {
     const geometry = new THREE.SphereGeometry(radius, 32, 32);
-    const flatWidth = 2 * Math.max(1, aspectRatio);
-    const flatHeight = 2 * Math.max(1, 1 / aspectRatio);
-    const flatVertices = getFlatVertices(
-      geometry.vertices,
-      flatWidth,
-      flatHeight,
-    );
+    const flatVertices = getFlatVertices(geometry.vertices);
     geometry.morphTargets.push({ name: "flat", vertices: flatVertices });
     const material = new THREE.MeshLambertMaterial({
       map: texture,
@@ -31,12 +27,10 @@ export class FlatteningBall {
       morphNormals: true,
     });
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.x = center.x;
-    mesh.position.y = center.y;
-    mesh.position.z = center.z;
+    mesh.position.copy(center);
     mesh.rotation.y = (3 * Math.PI) / 2;
     const flatDistance =
-      flatHeight / (2 * Math.tan((fieldOfView * Math.PI) / 360));
+      FLAT_HEIGHT / (2 * Math.tan((fieldOfView * Math.PI) / 360));
     // The -radius is because the flat version of the ball is distance r
     // from the ball's center.
     const flatCameraPosition = center
@@ -56,33 +50,24 @@ export class FlatteningBall {
   }
 }
 
-function getFlatVertices(
-  sphereVertices: THREE.Vector3[],
-  width: number,
-  height: number,
-): THREE.Vector3[] {
-  const flatVertices = sphereVertices.map(v => toFlatVertex(v, width, height));
+function getFlatVertices(sphereVertices: THREE.Vector3[]): THREE.Vector3[] {
+  const flatVertices = sphereVertices.map(v => toFlatVertex(v));
   // Because we need to finesse some of the points near where spherical
   // coordinates are discontinuous, the vertices we get here don't precisely
   // have the requested dimensions. Hence, scale them after the fact.
   const minY = flatVertices.map(v => v.y).reduce(min);
   const maxY = flatVertices.map(v => v.y).reduce(max);
-  const yScale = height / (maxY - minY);
+  const yScale = FLAT_HEIGHT / (maxY - minY);
   const minZ = flatVertices.map(v => v.z).reduce(min);
   const maxZ = flatVertices.map(v => v.z).reduce(max);
-  const zScale = width / (maxZ - minZ);
+  const zScale = FLAT_WIDTH / (maxZ - minZ);
   return flatVertices.map(
     ({ x, y, z }) => new THREE.Vector3(x, yScale * y, zScale * z),
   );
 }
 
-function toFlatVertex(
-  v: THREE.Vector3,
-  width: number,
-  height: number,
-): THREE.Vector3 {
+function toFlatVertex(v: THREE.Vector3): THREE.Vector3 {
   const { x, y, z } = v;
-
   const r = v.length();
   const lat = Math.asin(y / r);
   const lon = Math.atan2(-z, x);
@@ -91,7 +76,7 @@ function toFlatVertex(
     // the center.
     return new THREE.Vector3(
       r - 1 / 256,
-      (((Math.sign(y) * height) / 2) * 7) / 8,
+      (((Math.sign(y) * FLAT_HEIGHT) / 2) * 7) / 8,
       0,
     );
   }
@@ -99,14 +84,14 @@ function toFlatVertex(
     // Likewise, "hide" points close to where longitude "jumps."
     return new THREE.Vector3(
       r - 1 / 256,
-      (((Math.sign(y) * height) / 2) * 7) / 8,
+      (((Math.sign(y) * FLAT_HEIGHT) / 2) * 7) / 8,
       0,
     );
   }
   return new THREE.Vector3(
     r,
-    (height * lat) / Math.PI,
-    (width * -lon) / (2 * Math.PI),
+    (FLAT_HEIGHT * lat) / Math.PI,
+    (FLAT_WIDTH * -lon) / (2 * Math.PI),
   );
 }
 

@@ -75,10 +75,9 @@ export async function loadFlier(): Promise<Flier> {
   ]);
 
   const scene = new THREE.Scene();
-  const aspectRatio = window.innerWidth / window.innerHeight;
   const camera = new THREE.PerspectiveCamera(
     FIELD_OF_VIEW,
-    aspectRatio,
+    getAspectRatio(),
     0.1,
     1000,
   );
@@ -104,7 +103,6 @@ export async function loadFlier(): Promise<Flier> {
     texture: hankTexture,
     radius: 1,
     center: HANK_LOCATION,
-    aspectRatio,
     fieldOfView: FIELD_OF_VIEW,
   });
   hankBall.setFlatness(1);
@@ -114,7 +112,6 @@ export async function loadFlier(): Promise<Flier> {
     texture: lunaTexture,
     radius: 1,
     center: LUNA_LOCATION,
-    aspectRatio,
     fieldOfView: FIELD_OF_VIEW,
   });
   lunaBall.setFlatness(0);
@@ -128,7 +125,11 @@ export async function loadFlier(): Promise<Flier> {
     lighting: 0,
   };
 
-  const render = ({
+  const renderOnly = () => {
+    renderer.render(scene, camera);
+  };
+
+  const syncStateAndRender = ({
     hankBallFlatness,
     lunaBallFlatness,
     cameraPosition,
@@ -142,7 +143,7 @@ export async function loadFlier(): Promise<Flier> {
     ambientLight.intensity =
       (1 - lighting) * 1 + lighting * AMBIENT_LIGHTING_INTENSITY;
     pointLight.intensity = lighting * POINT_LIGHT_INTENSITY;
-    renderer.render(scene, camera);
+    renderOnly();
   };
 
   const doFlight = async (destination: Destination) => {
@@ -192,11 +193,23 @@ export async function loadFlier(): Promise<Flier> {
             : Animations.setHankBallFlatness(1),
       },
     ];
-    state = await runAnimations(animations, state, copyRenderState, render);
+    state = await runAnimations(
+      animations,
+      state,
+      copyRenderState,
+      syncStateAndRender,
+    );
   };
 
   addCanvas(renderer);
-  render(state);
+  syncStateAndRender(state);
+
+  window.addEventListener("resize", () => {
+    camera.aspect = getAspectRatio();
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderOnly();
+  });
 
   return {
     flyToHank: () => doFlight(Destination.Hank),
@@ -285,7 +298,7 @@ function handleResizes(
   renderer: THREE.Renderer,
 ): void {
   window.addEventListener("resize", () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = getAspectRatio();
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
@@ -295,6 +308,10 @@ function addCanvas(renderer: THREE.Renderer): void {
   const canvas = renderer.domElement;
   canvas.style.position = "absolute";
   document.body.appendChild(canvas);
+}
+
+function getAspectRatio(): number {
+  return window.innerWidth / window.innerHeight;
 }
 
 function randomInRange(random: () => number, min: number, max: number): number {
