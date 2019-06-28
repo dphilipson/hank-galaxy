@@ -1,9 +1,7 @@
 declare module "*.png" {
-    const url: string;
-    export = url;
+  export default string;
 }
 
 declare module "*.jpg" {
-    const url: string;
-    export = url;
+  export default string;
 }

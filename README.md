@@ -8,4 +8,4 @@ Repo for the page [Hank Galaxy](https://dphilipson.github.io/hank-galaxy).
 
 A: Why not?
 
-Copyright © 2017 David Philipson
+Copyright © 2019 David Philipson
