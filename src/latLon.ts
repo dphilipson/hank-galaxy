@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 export interface LatLon {
   lat: number;
@@ -6,10 +6,10 @@ export interface LatLon {
   r: number;
 }
 
-export function toRect({ lat, lon, r }: LatLon): THREE.Vector3 {
+export function toRect({ lat, lon, r }: LatLon): Vector3 {
   const littleR = r * Math.cos(lat);
   const z = littleR * Math.cos(lon);
   const x = littleR * Math.sin(lon);
   const y = r * Math.sin(lat);
-  return new THREE.Vector3(x, y, z);
+  return new Vector3(x, y, z);
 }

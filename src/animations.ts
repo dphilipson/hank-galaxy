@@ -1,9 +1,9 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 import { StateUpdater } from "./animationEngine";
 import { RenderState } from "./renderState";
 
 export function travelGreatCircleTo(
-  target: THREE.Vector3,
+  target: Vector3,
 ): StateUpdater<RenderState> {
   const targetR = target.length();
   return (state, t, initialState) => {
@@ -17,16 +17,14 @@ export function travelGreatCircleTo(
   };
 }
 
-export function travelTo(target: THREE.Vector3): StateUpdater<RenderState> {
+export function travelTo(target: Vector3): StateUpdater<RenderState> {
   return (state, t, initialState) => {
     state.cameraPosition.lerpVectors(initialState.cameraPosition, target, t);
     return state;
   };
 }
 
-export function moveLookAtTarget(
-  target: THREE.Vector3,
-): StateUpdater<RenderState> {
+export function moveLookAtTarget(target: Vector3): StateUpdater<RenderState> {
   return (state, t, initialState) => {
     const initialLookAt = initialState.cameraLookAt;
     const initialFromCamera = initialLookAt.clone().sub(state.cameraPosition);

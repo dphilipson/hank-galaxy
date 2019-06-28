@@ -1,5 +1,20 @@
 import seedrandom from "seedrandom";
-import * as THREE from "three";
+import {
+  AmbientLight,
+  CubeTexture,
+  CubeTextureLoader,
+  Mesh,
+  MeshBasicMaterial,
+  MeshLambertMaterial,
+  PerspectiveCamera,
+  PointLight,
+  Renderer,
+  Scene,
+  SphereBufferGeometry,
+  Texture,
+  TextureLoader,
+  WebGLRenderer,
+} from "three";
 import { Animation, runAnimations } from "./animationEngine";
 import * as Animations from "./animations";
 import { FlatteningBall } from "./flatteningBall";
@@ -74,14 +89,14 @@ export async function loadFlier(): Promise<Flier> {
     loadTexture(planetUrl),
   ]);
 
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(
+  const scene = new Scene();
+  const camera = new PerspectiveCamera(
     FIELD_OF_VIEW,
     getAspectRatio(),
     0.1,
     1000,
   );
-  const renderer = new THREE.WebGLRenderer();
+  const renderer = new WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
   handleResizes(camera, renderer);
   scene.background = backgroundTexture;
@@ -90,13 +105,10 @@ export async function loadFlier(): Promise<Flier> {
   addSmallPlanet(scene, smallPlanetTexture);
   addDebris(scene, commonDebrisTexture, rareDebrisTexture);
 
-  const ambientLight = new THREE.AmbientLight();
+  const ambientLight = new AmbientLight();
   scene.add(ambientLight);
 
-  const pointLight = new THREE.PointLight(
-    POINT_LIGHT_COLOR,
-    POINT_LIGHT_INTENSITY,
-  );
+  const pointLight = new PointLight(POINT_LIGHT_COLOR, POINT_LIGHT_INTENSITY);
   scene.add(pointLight);
 
   const hankBall = FlatteningBall.create({
@@ -217,44 +229,44 @@ export async function loadFlier(): Promise<Flier> {
   };
 }
 
-function addBigPlanet(scene: THREE.Scene, texture: THREE.Texture): void {
-  const geometry = new THREE.SphereBufferGeometry(BIG_PLANET_RADIUS, 32, 32);
-  const material = new THREE.MeshBasicMaterial({
+function addBigPlanet(scene: Scene, texture: Texture): void {
+  const geometry = new SphereBufferGeometry(BIG_PLANET_RADIUS, 32, 32);
+  const material = new MeshBasicMaterial({
     map: texture,
   });
-  const planet = new THREE.Mesh(geometry, material);
+  const planet = new Mesh(geometry, material);
   scene.add(planet);
 }
 
-function addBigPlanetAtmosphere(scene: THREE.Scene): void {
-  const geometry = new THREE.SphereBufferGeometry(
+function addBigPlanetAtmosphere(scene: Scene): void {
+  const geometry = new SphereBufferGeometry(
     BIG_PLANET_RADIUS + ATMOSPHERE_THICKNESS,
     32,
     32,
   );
-  const material = new THREE.MeshBasicMaterial({
+  const material = new MeshBasicMaterial({
     color: ATMOSPHERE_COLOR,
     transparent: true,
     opacity: ATMOSPHERE_OPACITY,
   });
-  const planet = new THREE.Mesh(geometry, material);
+  const planet = new Mesh(geometry, material);
   scene.add(planet);
 }
 
-function addSmallPlanet(scene: THREE.Scene, texture: THREE.Texture): void {
-  const geometry = new THREE.SphereBufferGeometry(SMALL_PLANET_RADIUS, 16, 16);
-  const material = new THREE.MeshLambertMaterial({
+function addSmallPlanet(scene: Scene, texture: Texture): void {
+  const geometry = new SphereBufferGeometry(SMALL_PLANET_RADIUS, 16, 16);
+  const material = new MeshLambertMaterial({
     map: texture,
   });
-  const planet = new THREE.Mesh(geometry, material);
+  const planet = new Mesh(geometry, material);
   planet.position.copy(SMALL_PLANET_LOCATION);
   scene.add(planet);
 }
 
 function addDebris(
-  scene: THREE.Scene,
-  commonTexture: THREE.Texture,
-  rareTexture: THREE.Texture,
+  scene: Scene,
+  commonTexture: Texture,
+  rareTexture: Texture,
 ): void {
   const random = seedrandom("seed");
   for (let i = 0; i < DEBRIS_COUNT; i++) {
@@ -268,17 +280,17 @@ function addDebris(
     );
     const position = toRect({ lat, lon, r });
     const radius = randomInRange(random, 0.25, 2);
-    const geometry = new THREE.SphereBufferGeometry(radius, 16, 16);
-    const material = new THREE.MeshLambertMaterial({ map: texture });
-    const planet = new THREE.Mesh(geometry, material);
+    const geometry = new SphereBufferGeometry(radius, 16, 16);
+    const material = new MeshLambertMaterial({ map: texture });
+    const planet = new Mesh(geometry, material);
     planet.position.copy(position);
     scene.add(planet);
   }
 }
 
-function loadBackground(): Promise<THREE.CubeTexture> {
+function loadBackground(): Promise<CubeTexture> {
   return new Promise((resolve, reject) => {
-    new THREE.CubeTextureLoader().load(
+    new CubeTextureLoader().load(
       [bgLeftUrl, bgRightUrl, bgTopUrl, bgBotUrl, bgBackUrl, bgFrontUrl],
       resolve,
       undefined,
@@ -287,16 +299,13 @@ function loadBackground(): Promise<THREE.CubeTexture> {
   });
 }
 
-function loadTexture(imageUrl: string): Promise<THREE.Texture> {
+function loadTexture(imageUrl: string): Promise<Texture> {
   return new Promise((resolve, reject) => {
-    new THREE.TextureLoader().load(imageUrl, resolve, undefined, reject);
+    new TextureLoader().load(imageUrl, resolve, undefined, reject);
   });
 }
 
-function handleResizes(
-  camera: THREE.PerspectiveCamera,
-  renderer: THREE.Renderer,
-): void {
+function handleResizes(camera: PerspectiveCamera, renderer: Renderer): void {
   window.addEventListener("resize", () => {
     camera.aspect = getAspectRatio();
     camera.updateProjectionMatrix();
@@ -304,7 +313,7 @@ function handleResizes(
   });
 }
 
-function addCanvas(renderer: THREE.Renderer): void {
+function addCanvas(renderer: Renderer): void {
   const canvas = renderer.domElement;
   canvas.style.position = "absolute";
   document.body.appendChild(canvas);

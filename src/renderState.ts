@@ -1,10 +1,10 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 export interface RenderState {
   hankBallFlatness: number;
   lunaBallFlatness: number;
-  cameraPosition: THREE.Vector3;
-  cameraLookAt: THREE.Vector3;
+  cameraPosition: Vector3;
+  cameraLookAt: Vector3;
   lighting: number;
 }
 

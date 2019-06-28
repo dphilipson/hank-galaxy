@@ -1,9 +1,15 @@
-import * as THREE from "three";
+import {
+  Mesh,
+  MeshLambertMaterial,
+  SphereGeometry,
+  Texture,
+  Vector3,
+} from "three";
 
 export interface FlatteningBallCreateParams {
-  texture: THREE.Texture;
+  texture: Texture;
   radius: number;
-  center: THREE.Vector3;
+  center: Vector3;
   fieldOfView: number;
 }
 
@@ -18,15 +24,15 @@ export class FlatteningBall {
     center,
     fieldOfView,
   }: FlatteningBallCreateParams): FlatteningBall {
-    const geometry = new THREE.SphereGeometry(radius, 32, 32);
+    const geometry = new SphereGeometry(radius, 32, 32);
     const flatVertices = getFlatVertices(geometry.vertices);
     geometry.morphTargets.push({ name: "flat", vertices: flatVertices });
-    const material = new THREE.MeshLambertMaterial({
+    const material = new MeshLambertMaterial({
       map: texture,
       morphTargets: true,
       morphNormals: true,
     });
-    const mesh = new THREE.Mesh(geometry, material);
+    const mesh = new Mesh(geometry, material);
     mesh.position.copy(center);
     mesh.rotation.y = (3 * Math.PI) / 2;
     const flatDistance =
@@ -35,13 +41,13 @@ export class FlatteningBall {
     // from the ball's center.
     const flatCameraPosition = center
       .clone()
-      .sub(new THREE.Vector3(0, 0, -flatDistance - radius));
+      .sub(new Vector3(0, 0, -flatDistance - radius));
     return new FlatteningBall(mesh, flatCameraPosition);
   }
 
   private constructor(
-    public readonly mesh: THREE.Mesh,
-    public readonly flatCameraPosition: THREE.Vector3,
+    public readonly mesh: Mesh,
+    public readonly flatCameraPosition: Vector3,
   ) {}
 
   public setFlatness(flatness: number): void {
@@ -50,7 +56,7 @@ export class FlatteningBall {
   }
 }
 
-function getFlatVertices(sphereVertices: THREE.Vector3[]): THREE.Vector3[] {
+function getFlatVertices(sphereVertices: Vector3[]): Vector3[] {
   const flatVertices = sphereVertices.map(v => toFlatVertex(v));
   // Because we need to finesse some of the points near where spherical
   // coordinates are discontinuous, the vertices we get here don't precisely
@@ -62,11 +68,11 @@ function getFlatVertices(sphereVertices: THREE.Vector3[]): THREE.Vector3[] {
   const maxZ = flatVertices.map(v => v.z).reduce(max);
   const zScale = FLAT_WIDTH / (maxZ - minZ);
   return flatVertices.map(
-    ({ x, y, z }) => new THREE.Vector3(x, yScale * y, zScale * z),
+    ({ x, y, z }) => new Vector3(x, yScale * y, zScale * z),
   );
 }
 
-function toFlatVertex(v: THREE.Vector3): THREE.Vector3 {
+function toFlatVertex(v: Vector3): Vector3 {
   const { x, y, z } = v;
   const r = v.length();
   const lat = Math.asin(y / r);
@@ -74,7 +80,7 @@ function toFlatVertex(v: THREE.Vector3): THREE.Vector3 {
   if (x === 0 && z === 0) {
     // Special case for the poles. "Hide" them behind the plane and towards
     // the center.
-    return new THREE.Vector3(
+    return new Vector3(
       r - 1 / 256,
       (((Math.sign(y) * FLAT_HEIGHT) / 2) * 7) / 8,
       0,
@@ -82,13 +88,13 @@ function toFlatVertex(v: THREE.Vector3): THREE.Vector3 {
   }
   if (lon + Math.PI < 1 / 16 || Math.PI - lon < 1 / 16) {
     // Likewise, "hide" points close to where longitude "jumps."
-    return new THREE.Vector3(
+    return new Vector3(
       r - 1 / 256,
       (((Math.sign(y) * FLAT_HEIGHT) / 2) * 7) / 8,
       0,
     );
   }
-  return new THREE.Vector3(
+  return new Vector3(
     r,
     (FLAT_HEIGHT * lat) / Math.PI,
     (FLAT_WIDTH * -lon) / (2 * Math.PI),
